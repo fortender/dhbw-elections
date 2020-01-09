@@ -4,23 +4,28 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { httpInterceptorProviders } from 'http-interceptors';
 import { LoginComponent } from './login/login.component';
 import { HttpClientModule } from '@angular/common/http';
+import { httpInterceptors } from './http-interceptors';
+import { MaterialModule } from './material.module';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    LoginComponent
-  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    HttpClientModule
+    HttpClientModule,
+
+    FormsModule,
+    MaterialModule
+  ],
+  declarations: [
+    AppComponent,
+    LoginComponent
   ],
   providers: [
-    httpInterceptorProviders
+    httpInterceptors
   ],
   bootstrap: [AppComponent]
 })

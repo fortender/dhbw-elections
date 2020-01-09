@@ -1,6 +1,36 @@
-<div>
-    <p>It works!</p>
-    <button (click)="onClick()">
-        Test
-    </button>
-</div>
+<mat-card>
+    <mat-card-title>Login</mat-card-title>
+    <mat-card-content>
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+            <p>
+                <mat-form-field>
+                    <input matInput placeholder="E-Mail" formControlName="mail">
+                    <mat-hint>
+                        sXXXXXX@student.dhbw-mannheim.de
+                    </mat-hint>
+                    <mat-error *ngIf="loginForm.get('mail').invalid">
+                        Bitte gebe eine valide s-Adresse an!
+                    </mat-error>
+                </mat-form-field>
+            </p>
+
+            <p>
+                <mat-form-field>
+                    <input matInput type="password" placeholder="Passwort" formControlName="password">
+                    <mat-error *ngIf="loginForm.get('password').invalid">
+                        Bitte gebe dein Passwort ein!
+                    </mat-error>
+                </mat-form-field>
+            </p>
+
+            <p *ngIf="error" class="error">
+                {{ error }}
+            </p>
+
+            <div class="submit">
+                <button type="submit" mat-button>Login</button>
+            </div>
+
+        </form>
+    </mat-card-content>
+</mat-card>
