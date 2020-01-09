@@ -9,20 +9,25 @@ import { HttpClientModule } from '@angular/common/http';
 import { httpInterceptors } from './http-interceptors';
 import { MaterialModule } from './material.module';
 import { FormsModule } from '@angular/forms';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { VoteComponent } from './vote/vote.component';
 
 @NgModule({
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    FormsModule,
     HttpClientModule,
 
-    FormsModule,
     MaterialModule
   ],
   declarations: [
     AppComponent,
-    LoginComponent
+
+    LoginComponent,
+    VoteComponent,
+    PageNotFoundComponent
   ],
   providers: [
     httpInterceptors

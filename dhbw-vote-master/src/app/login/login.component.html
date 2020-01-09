@@ -25,6 +25,9 @@
 
             <p *ngIf="error" class="error">
                 {{ error }}
+                <button mat-button (click)="error = null">
+                    <mat-icon>clear</mat-icon>
+                </button>
             </p>
 
             <div class="submit">

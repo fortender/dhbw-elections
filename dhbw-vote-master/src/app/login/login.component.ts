@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { AuthenticationService } from '../authentication.service';
 import { FormControl, Validators, FormGroup } from '@angular/forms';
 
@@ -32,7 +32,7 @@ export class LoginComponent implements OnInit {
       const loginData = this.loginForm.value;
       const mail = loginData.mail;
       const pass = loginData.password;
-      this.authenticationService.login(mail, pass).subscribe(o => {
+      this.authenticationService.login(mail, pass).subscribe(() => {
         this.error = 'E-Mail-Adresse oder Passwort falsch';
       });
     }
