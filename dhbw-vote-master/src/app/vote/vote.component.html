@@ -1,3 +1,13 @@
-<p>
-    Vote here
-</p>
+<div *ngIf="voted">
+    <p>Du hast bereits abgestimmt! Danke!</p>
+</div>
+
+<div *ngIf="!voted">
+    <ul>
+        <li *ngFor="let candidate of candidates">
+            <img [src]="candidate.photo" width="50px">
+            {{candidate.firstName}} {{candidate.lastName}}
+        </li>
+    </ul>
+    <button mat-button (click)="vote()">Abstimmen</button>
+</div>

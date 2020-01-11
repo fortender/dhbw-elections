@@ -13,6 +13,12 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 import { VoteComponent } from './vote/vote.component';
 
 @NgModule({
+  declarations: [
+    AppComponent,
+    LoginComponent,
+    VoteComponent,
+    PageNotFoundComponent
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -21,13 +27,6 @@ import { VoteComponent } from './vote/vote.component';
     HttpClientModule,
 
     MaterialModule
-  ],
-  declarations: [
-    AppComponent,
-
-    LoginComponent,
-    VoteComponent,
-    PageNotFoundComponent
   ],
   providers: [
     httpInterceptors
