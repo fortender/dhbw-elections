@@ -18,16 +18,16 @@ export class FakeBackendInterceptor implements HttpInterceptor {
                     // Validate request body
                     const obj = req.body;
                     if (!obj || !obj.mail || !obj.password) {
-                        return throwError({ error: { description: 'Malformed request body!' } });
+                        return throwError('Malformed request body!');
                     } else {
                         const user = USERS.find(u => u.mail === obj.mail);
                         // Throw if user not found
                         if (!user) {
-                            return throwError({ error: { description: 'User not found' }});
+                            return throwError('User not found');
                         }
                         // Throw if password is wrong
                         if (user.password !== obj.password) {
-                            return throwError({ error: { description: 'Invalid password' }});
+                            return throwError('Invalid password');
                         }
                         // Return fake jwt token
                         return of(new HttpResponse({
@@ -48,7 +48,7 @@ export class FakeBackendInterceptor implements HttpInterceptor {
                 const user = USERS.find(u => u.mail === mail);
 
                 if (!user) {
-                    return throwError({ error: { description: 'User not found' }});
+                    return throwError('User not found');
                 }
 
                 if (req.method === 'GET') {
@@ -77,7 +77,9 @@ export class FakeBackendInterceptor implements HttpInterceptor {
             // Unknown api call to backend, so we pass it to the next handler
             return next.handle(req);
         })
-        .pipe(delay(500));
+        .pipe(materialize())
+        .pipe(delay(500))
+        .pipe(dematerialize());
     }
 }
 

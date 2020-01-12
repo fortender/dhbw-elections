@@ -1,13 +1,23 @@
-<div *ngIf="voted">
-    <p>Du hast bereits abgestimmt! Danke!</p>
-</div>
+<mat-card>
+    <mat-card-title>Voting</mat-card-title>
+    <mat-card-content>
+        <div *ngIf="voted">
+            <p>Danke für Deine Stimme!</p>
+        </div>
 
-<div *ngIf="!voted">
-    <ul>
-        <li *ngFor="let candidate of candidates">
-            <img [src]="candidate.photo" width="50px">
-            {{candidate.firstName}} {{candidate.lastName}}
-        </li>
-    </ul>
-    <button mat-button (click)="vote()">Abstimmen</button>
-</div>
+        <div *ngIf="!voted">
+            <mat-radio-group [(ngModel)]="selectedCandidate">
+                <mat-radio-button *ngFor="let candidate of candidates" [value]="candidate">
+                    <!--<img [src]="candidate.photo" width="50px">-->
+                    {{candidate.firstName}} {{candidate.lastName}}
+                </mat-radio-button>
+            </mat-radio-group>
+            <div *ngIf="selectedCandidate != null">
+                <p>
+                    Sie haben {{selectedCandidate.firstName}} {{selectedCandidate.lastName}} gewählt!
+                </p>
+                <button mat-button (click)="vote()">Abstimmen</button>
+            </div>
+        </div>
+    </mat-card-content>
+</mat-card>

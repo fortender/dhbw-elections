@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import { Router, NavigationStart } from '@angular/router';
 
 @Injectable({
@@ -35,6 +35,10 @@ export class AlertService {
 
   error(message: string, keep: boolean) {
     this.dispatch('error', message, keep);
+  }
+
+  getAlerts(): Observable<any> {
+    return this.alerts.asObservable();
   }
 
 }

@@ -1,1 +1,21 @@
+<mat-toolbar>
+    <span class="toolbar-left">
+        Students' Union Elections
+    </span>
+    <ng-container *ngIf="user != null">
+        <span id="mail" *ngIf="!(isScreenSmall$ | async)">
+            {{user.mail}}
+        </span>
+    </ng-container>
+    <button mat-raised-button *ngIf="user != null" (click)="logout()">Logout</button>
+</mat-toolbar>
+<!-- Alert banner -->
+<div *ngIf="alert" [ngClass]="{ 'alert': alert, 'alert-success': alert.type === 'success', 'alert-danger': alert.type === 'error' }">{{alert.message}}</div>
+
 <router-outlet></router-outlet>
+
+<div class="text-center">
+    <p>
+        © 2020 Projektgruppe 3
+    </p>
+</div>

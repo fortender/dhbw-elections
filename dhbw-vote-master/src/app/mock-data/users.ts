@@ -1,12 +1,12 @@
 export const USERS: any[] = [
     {
-        mail: 's170820@student.dhbw-mannheim.de',
-        password: 'GCn467phj',
+        mail: 's123456@student.dhbw-mannheim.de',
+        password: '123456',
         voted: null
     },
     {
-        mail: 's123456@student.dhbw-mannheim.de',
-        password: 'test123',
+        mail: 's654321@student.dhbw-mannheim.de',
+        password: '654321',
         voted: null
     }
 ];

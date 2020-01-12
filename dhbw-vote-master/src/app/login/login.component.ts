@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { AuthenticationService } from '../services/authentication.service';
 import { FormControl, Validators, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AlertService } from '../services/alert.service';
 
 @Component({
   selector: 'app-login',
@@ -19,26 +20,26 @@ export class LoginComponent implements OnInit {
     password: new FormControl('', [Validators.required])
   });
 
-  @Input()
-  error: string | null;
-
   redirectUrl: string;
+
+  submitted: boolean;
 
   constructor(private authenticationService: AuthenticationService,
               private router: Router,
-              private activatedRoute: ActivatedRoute) { }
+              private activatedRoute: ActivatedRoute,
+              private alert: AlertService) { }
 
   ngOnInit() {
     if (this.authenticationService.isAuthenticated) {
       this.router.navigate(['vote']);
     }
-    this.activatedRoute.queryParamMap.subscribe(paramMap => {
-      this.redirectUrl = paramMap.get('redirectUrl');
-      this.error = paramMap.get('error');
-    });
+    const route = this.activatedRoute.snapshot;
+    this.redirectUrl = route.paramMap.get('redirectUrl') || '/vote';
   }
 
   onSubmit(): void {
+    this.submitted = true;
+
     // Check if form is valid
     if (this.loginForm.valid) {
       const loginData = this.loginForm.value;
@@ -46,14 +47,11 @@ export class LoginComponent implements OnInit {
       const pass = loginData.password;
 
       this.authenticationService.login(mail, pass).subscribe(result => {
-        // Authentication successful, redirect to initial target url if specified
-        if (this.redirectUrl) {
-          this.router.navigateByUrl(this.redirectUrl);
-        } else {
-          this.router.navigate(['vote']);
-        }
+        // Authentication successful, redirect to target url
+        this.router.navigate([this.redirectUrl]);
       }, error => {
-        this.error = error.error.description || error.toString();
+        this.alert.error(error, false);
+        this.submitted = false;
       });
     }
   }

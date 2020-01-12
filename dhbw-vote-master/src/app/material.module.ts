@@ -13,7 +13,9 @@ import {
   MatSnackBarModule,
   MatAutocompleteModule,
   MatTooltipModule,
-  MatFormFieldModule
+  MatFormFieldModule,
+  MatListModule,
+  MatRadioModule
 } from '@angular/material';
 import { ReactiveFormsModule } from '@angular/forms';
 
@@ -33,6 +35,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     MatAutocompleteModule,
     MatTooltipModule,
     MatFormFieldModule,
+    MatListModule,
+    MatRadioModule,
     ReactiveFormsModule
   ],
   exports: [
@@ -50,6 +54,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     MatAutocompleteModule,
     MatTooltipModule,
     MatFormFieldModule,
+    MatListModule,
+    MatRadioModule,
     ReactiveFormsModule
   ],
 })

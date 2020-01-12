@@ -9,29 +9,30 @@
                         sXXXXXX@student.dhbw-mannheim.de
                     </mat-hint>
                     <mat-error *ngIf="loginForm.get('mail').invalid">
-                        Bitte gebe eine valide s-Adresse an!
+                        Please enter a valid student mail address!
                     </mat-error>
                 </mat-form-field>
             </p>
 
             <p>
                 <mat-form-field>
-                    <input matInput type="password" placeholder="Passwort" formControlName="password">
+                    <input matInput type="password" placeholder="Password" formControlName="password">
                     <mat-error *ngIf="loginForm.get('password').invalid">
-                        Bitte gebe dein Passwort ein!
+                        Please enter your password!
                     </mat-error>
                 </mat-form-field>
             </p>
 
+            <!--
             <p *ngIf="error" class="error">
                 {{ error }}
-                <button mat-button (click)="error = null">
+                <button mat-icon-button (click)="error = null">
                     <mat-icon>clear</mat-icon>
                 </button>
             </p>
-
+            -->
             <div class="submit">
-                <button type="submit" mat-button>Login</button>
+                <button [disabled]="submitted || loginForm.invalid" type="submit" mat-button>Login</button>
             </div>
 
         </form>
