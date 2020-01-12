@@ -29,9 +29,9 @@ export class VoteComponent implements OnInit {
     }
 
     vote() {
-        this.votingService.vote(this.candidates[0]).subscribe(o => {
+        this.votingService.vote(this.selectedCandidate).subscribe(o => {
             this.voted = true;
-            this.alertService.success('Success! Thank you for your vote!', false);
+            this.alertService.success(`Successfully voted for ${this.selectedCandidate.firstName} ${this.selectedCandidate.lastName}!`, false);
         }, error => {
             this.alertService.error(error, false);
         });

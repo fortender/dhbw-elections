@@ -24,3 +24,9 @@ mat-radio-group {
 mat-radio-group mat-radio-button {
     margin: 5px;
 }
+
+.center-stuff {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}

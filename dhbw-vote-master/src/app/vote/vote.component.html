@@ -2,7 +2,7 @@
     <mat-card-title>Voting</mat-card-title>
     <mat-card-content>
         <div *ngIf="voted">
-            <p>Danke für Deine Stimme!</p>
+            <p>Thanks for your vote!</p>
         </div>
 
         <div *ngIf="!voted">
@@ -12,11 +12,11 @@
                     {{candidate.firstName}} {{candidate.lastName}}
                 </mat-radio-button>
             </mat-radio-group>
-            <div *ngIf="selectedCandidate != null">
+            <div class="center-stuff" *ngIf="selectedCandidate != null">
                 <p>
-                    Sie haben {{selectedCandidate.firstName}} {{selectedCandidate.lastName}} gewählt!
+                    You selected {{selectedCandidate.firstName}} {{selectedCandidate.lastName}}!
                 </p>
-                <button mat-button (click)="vote()">Abstimmen</button>
+                <button mat-raised-button (click)="vote()">Vote</button>
             </div>
         </div>
     </mat-card-content>
