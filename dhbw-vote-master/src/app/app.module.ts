@@ -11,12 +11,15 @@ import { MaterialModule } from './material.module';
 import { FormsModule } from '@angular/forms';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { VoteComponent } from './vote/vote.component';
+import { ElectionResultsComponent } from './election-results/election-results.component';
+import { ChartsModule } from 'ng2-charts';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     VoteComponent,
+    ElectionResultsComponent,
     PageNotFoundComponent
   ],
   imports: [
@@ -26,7 +29,8 @@ import { VoteComponent } from './vote/vote.component';
     FormsModule,
     HttpClientModule,
 
-    MaterialModule
+    MaterialModule,
+    ChartsModule
   ],
   providers: [
     httpInterceptors

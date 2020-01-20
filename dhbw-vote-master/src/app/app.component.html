@@ -4,7 +4,7 @@
     </span>
     <ng-container *ngIf="user != null">
         <span id="mail" *ngIf="!(isScreenSmall$ | async)">
-            {{user.mail}}
+            {{user.username}}
         </span>
     </ng-container>
     <button mat-raised-button *ngIf="user != null" (click)="logout()">Logout</button>

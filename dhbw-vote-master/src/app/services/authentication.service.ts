@@ -30,10 +30,11 @@ export class AuthenticationService {
   }
 
   login(mail: string, password: string) {
-    return this.http.post<any>(`${environment.apiUrl}/users/authenticate`, { mail, password })
+    return this.http.post<any>(`${environment.apiUrl}/users/login`, { username: mail, password })
       .pipe(map(user => {
         // Successful login -> store jwt token in local storage
         if (user && user.token) {
+          user.username = mail;
           localStorage.setItem('user', JSON.stringify(user));
           this.currentUserSubject.next(user);
         }

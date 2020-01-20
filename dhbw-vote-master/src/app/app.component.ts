@@ -20,7 +20,7 @@ export class AppComponent implements OnInit {
   constructor(private authenticationService: AuthenticationService,
               private router: Router,
               private alertService: AlertService) {
-    this.authenticationService.currentUser.subscribe(user => this.user = user );
+    this.authenticationService.currentUser.subscribe(user => this.user = user);
     this.alertService.getAlerts().subscribe(alert => this.alert = alert);
   }
 

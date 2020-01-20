@@ -7,8 +7,10 @@ import pg from "pg";
 import { errorHandler } from "./errorHandler";
 
 // Read config
+/*
 const configFileBuffer = fs.readFileSync("config.json");
 const config = JSON.parse(configFileBuffer.toString());
+*/
 const secret = process.env.JWT_SECRET || "supersecret";
 
 // Compression filter
@@ -24,6 +26,11 @@ const app = express()
     .use(express.json())
     .use(express.urlencoded({ extended: true }))
     .use(compression({ filter: shouldCompress, threshold: 0 }))
+    .use((req, res, next) => {
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "*");
+        next();
+    })
     .use(errorHandler);
 
 // Database
@@ -124,7 +131,8 @@ app.route("/users/login").post(async (req, res) => {
     if ((typeof username !== "string" && !(username instanceof String)) ||
         (typeof password !== "string" && !(password instanceof String))) {
         res.status(400).send({
-            error: "username or password missing or malformed",
+            errorCode: "MalformedLoginRequest",
+            errorDescription: "username or password missing or malformed",
         });
         return;
     }
@@ -139,7 +147,8 @@ app.route("/users/login").post(async (req, res) => {
     if (result.rowCount === 0) {
         // Throw error
         res.status(401).send({
-            error: "User not found!",
+            errorCode: "UserNotFound",
+            errorDescription: "User not found!",
         });
         return;
     }
@@ -156,7 +165,7 @@ app.route("/users/login").post(async (req, res) => {
                 exp,
             }, secret);
         res.status(200).send({
-            jwt: token,
+            token,
         });
     } else {
         res.status(401).send({
@@ -207,15 +216,40 @@ app.route("/elections").post(expectAuth(async (req, res) => {
 
 // Get election by id
 app.route("/elections/:election_id").get(expectAuth(async (req, res) => {
-    const result = await pool.query("select * from election where id = $1", [req.params.election_id]);
-    res.status(200).send(result.rows[0]);
+    let result = await pool.query("select * from election where id = $1", [req.params.election_id]);
+    if (result.rowCount === 0) {
+        res.status(200).send({
+            count: 0,
+            result: [],
+        });
+        return;
+    }
+
+    const election = result.rows[0];
+    const username = (req as any).token.sub;
+    const electionId = req.params.election_id;
+    result = await pool.query("select vote.id from vote inner join election_candidate on vote.election_candidate_id = election_candidate.id where (username = $1) and (election_id = $2)", [username, electionId]);
+    if (result.rowCount > 0) {
+        // User already voted -> add vote id
+        election.voteId = result.rows[0].id;
+    }
+    res.status(200).send(election);
+}));
+
+app.route("/elections/:election_id/results").get(expectAuth(async (req, res) => {
+    const query = "select * from candidate inner join (select candidate_id, count(*) as votes from election_candidate inner join vote on election_candidate.id = vote.election_candidate_id where election_id = $1 group by candidate_id) as t on candidate.id = t.candidate_id";
+    const result = await pool.query(query, [req.params.election_id]);
+    res.status(200).send({
+        count: result.rowCount,
+        result: result.rows,
+    });
 }));
 
 // Get candidates for specific election
 app.route("/elections/:election_id/candidates").get(expectAuth(async (req, res) => {
     const electionIdStr: string = req.params.election_id;
     const electionId: number = parseInt(electionIdStr, 10);
-    const query = "select candidate.* from election_candidate inner join candidate on election_candidate.candidate_id = candidate.id where election_id = $1";
+    const query = "select election_candidate.id, election_id, first_name, last_name, photo, info from election_candidate inner join candidate on election_candidate.candidate_id = candidate.id where election_id = $1";
     const result = await pool.query(query, [electionId]);
     res.status(200).send({
         count: result.rowCount,
@@ -277,7 +311,8 @@ function verifyToken(req, res): boolean {
         return true;
     } catch (e) {
         res.status(401).send({
-            error: (e as Error).message,
+            errorCode: "TokenVerificationError",
+            errorDescription: (e as Error).message,
         });
     }
 }

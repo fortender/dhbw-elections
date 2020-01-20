@@ -1,20 +1,25 @@
 <mat-card>
-    <mat-card-title>Voting</mat-card-title>
+    <mat-card-title *ngIf="election && election.info && election.info.title">
+        {{ election.info.title }}
+    </mat-card-title>
+    <mat-card-title *ngIf="!election || !election.info || !election.info.title">
+        Voting
+    </mat-card-title>
     <mat-card-content>
-        <div *ngIf="voted">
-            <p>Thanks for your vote!</p>
+        <div *ngIf="voteId != null">
+            <p>Thanks for your vote! Vote-ID: {{voteId}}</p>
         </div>
 
-        <div *ngIf="!voted">
+        <div *ngIf="election != null && voteId == null">
             <mat-radio-group [(ngModel)]="selectedCandidate">
-                <mat-radio-button *ngFor="let candidate of candidates" [value]="candidate">
+                <mat-radio-button *ngFor="let candidate of election.candidates" [value]="candidate">
                     <!--<img [src]="candidate.photo" width="50px">-->
-                    {{candidate.firstName}} {{candidate.lastName}}
+                    {{candidate.first_name}} {{candidate.last_name}}
                 </mat-radio-button>
             </mat-radio-group>
             <div class="center-stuff" *ngIf="selectedCandidate != null">
                 <p>
-                    You selected {{selectedCandidate.firstName}} {{selectedCandidate.lastName}}!
+                    You selected {{selectedCandidate.first_name}} {{selectedCandidate.last_name}}!
                 </p>
                 <button mat-raised-button (click)="vote()">Vote</button>
             </div>

@@ -4,6 +4,7 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 import { LoginComponent } from './login/login.component';
 import { VoteComponent } from './vote/vote.component';
 import { AuthGuard } from './guards/auth.guard';
+import { ElectionResultsComponent } from './election-results/election-results.component';
 
 const routes: Routes = [
   // { path: 'login/:redirectUrl', component: LoginComponent },
@@ -11,6 +12,11 @@ const routes: Routes = [
   {
     path: 'vote',
     component: VoteComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'elections/:election_id/results',
+    component: ElectionResultsComponent,
     canActivate: [AuthGuard]
   },
   {

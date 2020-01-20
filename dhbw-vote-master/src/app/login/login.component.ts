@@ -50,7 +50,7 @@ export class LoginComponent implements OnInit {
         // Authentication successful, redirect to target url
         this.router.navigate([this.redirectUrl]);
       }, error => {
-        this.alert.error(error, false);
+        this.alert.error(error.error.errorDescription, false);
         this.submitted = false;
       });
     }
