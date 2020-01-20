@@ -7,6 +7,10 @@ import { User } from '../user';
 import { environment } from 'src/environments/environment';
 import { AlertService } from './alert.service';
 
+import { JwtHelperService } from '@auth0/angular-jwt';
+
+const jwtHelper = new JwtHelperService();
+
 @Injectable({
   providedIn: 'root'
 })
@@ -26,7 +30,16 @@ export class AuthenticationService {
   }
 
   public get isAuthenticated(): boolean {
-    return this.currentUserValue !== null;
+    if (this.currentUserValue === null) {
+      return false;
+    }
+    const token = jwtHelper.decodeToken(this.currentUserValue.token);
+    if (token.exp <= Date.now()) {
+      localStorage.removeItem('user');
+      this.currentUserSubject.next(null);
+      return false;
+    }
+    return true;
   }
 
   login(mail: string, password: string) {

@@ -1,6 +1,6 @@
-CREATE DATABASE dhbw_elections;
-CREATE USER election_admin WITH ENCRYPTED PASSWORD 'admin';
-GRANT ALL PRIVILEGES ON DATABASE dhbw_elections TO election_admin;
+create database dhbw_elections;
+create user election_admin with encrypted password 'admin';
+grant all privileges on database dhbw_elections to election_admin;
 
 create table if not exists "user" (
     id integer primary key,

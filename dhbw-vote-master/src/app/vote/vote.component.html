@@ -6,14 +6,30 @@
         Voting
     </mat-card-title>
     <mat-card-content>
-        <div *ngIf="voteId != null">
-            <p>Thanks for your vote! Vote-ID: {{voteId}}</p>
+        <div *ngIf="voteId != null" style="text-align: center;">
+            <p>Thanks for your vote!</p>
+            <p><b>Vote-ID: {{voteId}}</b></p>
+            <button mat-raised-button [routerLink]="['/elections', election.id, 'results']">Results</button>
         </div>
 
-        <div *ngIf="election != null && voteId == null">
+        <div class="candidate-div" *ngIf="election != null && voteId == null">
+            <mat-card class="example-card" *ngFor="let candidate of election.candidates">
+                <mat-card-header>
+                    <!--<div mat-card-avatar ng-style="{'background-image': 'url(' + candidate.info.imageUrl + ')'" class="example-header-image"></div>-->
+                    <mat-card-title>{{candidate.first_name}} {{candidate.last_name}}</mat-card-title>
+                    <mat-card-subtitle>Candidate</mat-card-subtitle>
+                </mat-card-header>
+                <img mat-card-image [src]="candidate.info.imageUrl">
+                <mat-card-content>
+                    <p>{{candidate.info.info}}</p>
+                </mat-card-content>
+                <mat-card-actions>
+                    <button mat-button (click)="vote(candidate)">Vote</button>
+                </mat-card-actions>
+            </mat-card>
+           <!-- 
             <mat-radio-group [(ngModel)]="selectedCandidate">
                 <mat-radio-button *ngFor="let candidate of election.candidates" [value]="candidate">
-                    <!--<img [src]="candidate.photo" width="50px">-->
                     {{candidate.first_name}} {{candidate.last_name}}
                 </mat-radio-button>
             </mat-radio-group>
@@ -23,6 +39,7 @@
                 </p>
                 <button mat-raised-button (click)="vote()">Vote</button>
             </div>
+            -->
         </div>
     </mat-card-content>
 </mat-card>

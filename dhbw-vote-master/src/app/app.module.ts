@@ -13,6 +13,7 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 import { VoteComponent } from './vote/vote.component';
 import { ElectionResultsComponent } from './election-results/election-results.component';
 import { ChartsModule } from 'ng2-charts';
+import { VoteConfirmationDialogComponent } from './vote-confirmation-dialog/vote-confirmation-dialog.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { ChartsModule } from 'ng2-charts';
     LoginComponent,
     VoteComponent,
     ElectionResultsComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
+    VoteConfirmationDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -35,6 +37,7 @@ import { ChartsModule } from 'ng2-charts';
   providers: [
     httpInterceptors
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [VoteConfirmationDialogComponent]
 })
 export class AppModule { }

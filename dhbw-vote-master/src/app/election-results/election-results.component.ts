@@ -15,8 +15,8 @@ export class ElectionResultsComponent implements OnInit {
 
     @Input()
     electionId: number;
-
     election: any;
+    totalVotes: number;
 
     public pieChartOptions: ChartOptions = {
         responsive: true,
@@ -30,6 +30,18 @@ export class ElectionResultsComponent implements OnInit {
                     return label;
                 },
             },
+        },
+        tooltips: {
+            callbacks: {
+                label: (tooltipItem, chart) => {
+                    const dataset = chart.datasets[tooltipItem.datasetIndex];
+                    const label = chart.labels[tooltipItem.index];
+                    const datasetLabel = typeof label === 'string' ? label : label[0];
+                    const value = dataset.data[tooltipItem.index] as number;
+                    const total = (dataset.data as string[]).reduce((prev, cur) => prev + parseInt(cur, 10), 0);
+                    return `${datasetLabel}: ${value} Stimme(n) (${(value / total * 100).toFixed(2)} %)`;
+                }
+            }
         }
     };
     pieChartLabels: Label[] = [];
@@ -37,7 +49,7 @@ export class ElectionResultsComponent implements OnInit {
     pieChartType: ChartType = 'pie';
     pieChartLegend = true;
     pieChartPlugins = [pluginDataLabels];
-    pieChartColors = [];
+    pieChartColors = [{backgroundColor: ['rgba(255,0,0,0.3)', 'rgba(0,255,0,0.3)', 'rgba(0,0,255,0.3']}];
 
     constructor(private votingService: VotingService,
                 private activatedRoute: ActivatedRoute,
@@ -52,18 +64,13 @@ export class ElectionResultsComponent implements OnInit {
         this.votingService.getElectionResults(this.electionId).subscribe(
             success => {
                 const candidates: any[] = success.result;
+                this.totalVotes = candidates.reduce((prev, cur) => prev + parseInt(cur.votes, 10), 0);
                 this.pieChartLabels = candidates.map(c => [
                     `${c.first_name} ${c.last_name}`,
-                    `${(c.votes / candidates.length * 100).toFixed(2)} %`
+                    `${c.votes} Stimmen`,
+                    `${(c.votes / this.totalVotes * 100).toFixed(2)} %`
                 ]);
                 this.pieChartData = candidates.map(c => c.votes as number);
-                /*
-                this.pieChartColors = [
-                    {
-                        backgroundColor: candidates.map(c => `rgba(${Math.random() * 256},${Math.random() * 256},${Math.random() * 256}, 0.3)`)
-                    }
-                ];
-                */
             },
             error => this.alertService.error(error.error.errorDescription, false)
         );
@@ -71,11 +78,11 @@ export class ElectionResultsComponent implements OnInit {
 
     // events
     public chartClicked(e: any): void {
-        console.log(e);
+        //console.log(e);
     }
 
     public chartHovered(e: any): void {
-        console.log(e);
+        //console.log(e);
     }
 
 }

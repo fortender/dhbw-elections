@@ -4,6 +4,8 @@ import { Candidate } from '../candidate';
 import { AlertService } from '../services/alert.service';
 import { Observable } from 'rxjs';
 import { concatMap, map } from 'rxjs/operators';
+import { MatDialog } from '@angular/material';
+import { VoteConfirmationDialogComponent } from '../vote-confirmation-dialog/vote-confirmation-dialog.component';
 
 @Component({
     selector: 'app-vote',
@@ -20,7 +22,8 @@ export class VoteComponent implements OnInit {
     voteId: number;
 
     constructor(private votingService: VotingService,
-                private alertService: AlertService) { }
+                private alertService: AlertService,
+                private dialog: MatDialog) { }
 
     ngOnInit() {
         if (!this.electionId) {
@@ -38,13 +41,23 @@ export class VoteComponent implements OnInit {
         );
     }
 
-    vote() {
-        this.votingService.vote(this.selectedCandidate).subscribe(voteId => {
-            this.voteId = voteId;
-            this.alertService.success(`Successfully voted for ${this.selectedCandidate.first_name} ${this.selectedCandidate.last_name}! Your id: ${voteId}`, false);
-        }, error => {
-            this.voteId = null;
-            this.alertService.error(error.error.errorDescription, false);
+    vote(candidate: any) {
+        const dialogRef = this.dialog.open(VoteConfirmationDialogComponent, {
+            width: '250px',
+            data: { candidateName: `${candidate.first_name} ${candidate.last_name}` }
+        });
+        dialogRef.afterClosed().subscribe(result => {
+            console.dir(result);
+            const confirmed = result as boolean;
+            if (confirmed) {
+                this.votingService.vote(candidate).subscribe(voteId => {
+                    this.voteId = voteId;
+                    this.alertService.success(`Successfully voted for ${candidate.first_name} ${candidate.last_name}! Your id: ${voteId}`, false);
+                }, error => {
+                    this.voteId = null;
+                    this.alertService.error(error.error.errorDescription, false);
+                });
+            }
         });
     }
 

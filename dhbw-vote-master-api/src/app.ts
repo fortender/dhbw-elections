@@ -3,8 +3,7 @@ import crypto from "crypto";
 import express, { Request, Response } from "express";
 import fs from "fs";
 import jwt from "jsonwebtoken";
-import pg from "pg";
-import { errorHandler } from "./errorHandler";
+import pg, { native } from "pg";
 
 // Read config
 /*
@@ -31,7 +30,11 @@ const app = express()
         res.header("Access-Control-Allow-Headers", "*");
         next();
     })
-    .use(errorHandler);
+    .use((err, req: Request<any>, res: Response, next) => {
+        console.error(err.message);
+        err.statusCode = err.statusCode || 500;
+        res.status(err.statusCode).send(err.message);
+    });
 
 // Database
 const pool = new pg.Pool({
@@ -42,12 +45,14 @@ const pool = new pg.Pool({
 });
 
 // Get users
-app.route("/users").get(expectAuth(async (req, res) => {
-    const result = await pool.query("select username from \"user\"");
-    res.status(200).send({
-        count: result.rowCount,
-        users: result.rows,
-    });
+app.route("/users").get(expectAuth(async (req, res, next) => {
+    return pool.query("select username from \"user\"").then(
+        (result) => res.status(200).send({
+            count: result.rowCount,
+            users: result.rows,
+        }),
+        (error) => next(error),
+    );
 }));
 
 // Create new user
@@ -189,12 +194,14 @@ app.route("/candidates").get(expectAuth(async (req, res) => {
 }));
 
 // Get all elections
-app.route("/elections").get(expectAuth(async (req, res) => {
-    const result = await pool.query("select * from election");
-    res.status(200).send({
-        count: result.rowCount,
-        result: result.rows,
-    });
+app.route("/elections").get(expectAuth(async (req, res, next) => {
+    return pool.query("select * from election").then(
+        (result) => res.status(200).send({
+            count: result.rowCount,
+            result: result.rows,
+        }),
+        (error) => next(error),
+    );
 }));
 
 // Create an election
@@ -238,11 +245,21 @@ app.route("/elections/:election_id").get(expectAuth(async (req, res) => {
 
 app.route("/elections/:election_id/results").get(expectAuth(async (req, res) => {
     const query = "select * from candidate inner join (select candidate_id, count(*) as votes from election_candidate inner join vote on election_candidate.id = vote.election_candidate_id where election_id = $1 group by candidate_id) as t on candidate.id = t.candidate_id";
-    const result = await pool.query(query, [req.params.election_id]);
-    res.status(200).send({
-        count: result.rowCount,
-        result: result.rows,
-    });
+    const altQuery = "select vote.id as vote_id, candidate_id, first_name, last_name, voted_at from vote inner join election_candidate on vote.election_candidate_id = election_candidate.id inner join candidate on election_candidate.candidate_id = candidate.id where election_id = $1";
+    const test = req.query.mode === "test";
+    const view = req.query.view === "csv";
+    const result = await pool.query(test ? altQuery : query, [req.params.election_id]);
+    if (view) {
+        const header = result.fields.map((field) => field.name);
+        res.status(200).type("text/csv").send(
+            `${header.join(";")}\n${result.rows.map((r) => Object.values(r).join(";")).join("\n")}`,
+        );
+    } else {
+        res.status(200).send({
+            count: result.rowCount,
+            result: result.rows,
+        });
+    }
 }));
 
 // Get candidates for specific election
@@ -279,6 +296,12 @@ app.route("/elections/:election_id/candidates/:candidate_id/vote").post(expectAu
     });
 }));
 
+app.get("*", async (req, res, next) => {
+    const err = new Error(`Resource not found`) as any;
+    err.statusCode = 404;
+    next(err);
+});
+
 app.listen(4000, (err) => {
     if (err) {
         return console.error(err);
@@ -288,10 +311,10 @@ app.listen(4000, (err) => {
 
 // Helper functions
 
-function expectAuth(handler: (req: Request<any>, res: Response) => any): (req: Request<any>, res: Response) => any {
-    return (req, res) => {
+function expectAuth(handler: (req: Request<any>, res: Response, next: any) => any): (req: Request<any>, res: Response, next: any) => any {
+    return (req, res, next) => {
         if (verifyToken(req, res)) {
-            handler(req, res);
+            handler(req, res, next);
         }
     };
 }

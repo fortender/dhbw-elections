@@ -30,3 +30,26 @@ mat-radio-group mat-radio-button {
     flex-direction: column;
     justify-content: center;
 }
+
+.example-card {
+    max-width: 400px;
+    margin: 0 15px;
+}
+
+.example-header-image {
+    background-size: cover;
+}
+
+mat-card-actions {
+    text-align: center;
+}
+
+mat-card-actions button {
+    display: inline-block;
+}
+
+.candidate-div {
+    display: flex;
+    flex-direction: row;
+    margin-top: 10px !important;
+}
