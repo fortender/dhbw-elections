@@ -30,16 +30,24 @@ export class AuthenticationService {
   }
 
   public get isAuthenticated(): boolean {
-    if (this.currentUserValue === null) {
+    if (!this.isTokenPresent) {
       return false;
     }
-    const token = jwtHelper.decodeToken(this.currentUserValue.token);
-    if (token.exp <= Date.now()) {
+    if (this.isTokenExpired) {
       localStorage.removeItem('user');
       this.currentUserSubject.next(null);
       return false;
     }
     return true;
+  }
+
+  public get isTokenPresent(): boolean {
+    return this.currentUserValue !== null;
+  }
+
+  public get isTokenExpired(): boolean {
+    const token = jwtHelper.decodeToken(this.currentUserValue.token);
+    return token.exp <= Date.now();
   }
 
   login(mail: string, password: string) {

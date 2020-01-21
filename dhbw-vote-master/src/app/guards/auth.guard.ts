@@ -15,15 +15,19 @@ export class AuthGuard implements CanActivate {
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot)
     : Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    if (this.authenticationService.isAuthenticated) {
+    if (this.authenticationService.isTokenPresent) {
+      if (this.authenticationService.isTokenExpired) {
+        this.alert.error('Session expired. Please login.', true);
+        this.router.navigate(['/login'], {
+          queryParams: {
+            redirectUrl: state.url
+          }
+        });
+        return false;
+      }
       return true;
     }
-    this.alert.error('Session expired. Please login!', true);
-    this.router.navigate(['/login'], {
-      queryParams: {
-        redirectUrl: state.url
-      }
-    });
+    return false;
   }
 
 }

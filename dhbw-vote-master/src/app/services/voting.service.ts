@@ -53,6 +53,10 @@ export class VotingService {
     return this.http.get<any>(`${environment.apiUrl}/elections/${electionId}/results`);
   }
 
+  getElectionResultSet(electionId: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/elections/${electionId}/results?mode=test&view=csv`, { responseType: 'text' });
+  }
+
   vote(candidate: any): Observable<number> {
     const electionId = candidate.election_id;
     const candidateId = candidate.id;

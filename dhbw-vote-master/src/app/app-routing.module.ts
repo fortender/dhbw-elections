@@ -21,7 +21,7 @@ const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'vote',
+    redirectTo: 'login',
     pathMatch: 'full'
   },
   {

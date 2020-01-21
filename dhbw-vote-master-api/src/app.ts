@@ -235,7 +235,7 @@ app.route("/elections/:election_id").get(expectAuth(async (req, res) => {
     const election = result.rows[0];
     const username = (req as any).token.sub;
     const electionId = req.params.election_id;
-    result = await pool.query("select vote.id from vote inner join election_candidate on vote.election_candidate_id = election_candidate.id where (username = $1) and (election_id = $2)", [username, electionId]);
+    result = await pool.query("select (('x' || right(digest(vote.id::varchar, 'sha256')::text, 6))::bit(24)::int) as id from vote inner join election_candidate on vote.election_candidate_id = election_candidate.id where (username = $1) and (election_id = $2)", [username, electionId]);
     if (result.rowCount > 0) {
         // User already voted -> add vote id
         election.voteId = result.rows[0].id;
@@ -245,7 +245,7 @@ app.route("/elections/:election_id").get(expectAuth(async (req, res) => {
 
 app.route("/elections/:election_id/results").get(expectAuth(async (req, res) => {
     const query = "select * from candidate inner join (select candidate_id, count(*) as votes from election_candidate inner join vote on election_candidate.id = vote.election_candidate_id where election_id = $1 group by candidate_id) as t on candidate.id = t.candidate_id";
-    const altQuery = "select vote.id as vote_id, candidate_id, first_name, last_name, voted_at from vote inner join election_candidate on vote.election_candidate_id = election_candidate.id inner join candidate on election_candidate.candidate_id = candidate.id where election_id = $1";
+    const altQuery = "select (('x' || right(digest(vote.id::varchar, 'sha256')::text, 6))::bit(24)::int) as vote_id, candidate_id, first_name, last_name, voted_at from vote inner join election_candidate on vote.election_candidate_id = election_candidate.id inner join candidate on election_candidate.candidate_id = candidate.id where election_id = $1";
     const test = req.query.mode === "test";
     const view = req.query.view === "csv";
     const result = await pool.query(test ? altQuery : query, [req.params.election_id]);
@@ -290,7 +290,7 @@ app.route("/elections/:election_id/candidates/:candidate_id/vote").post(expectAu
         });
         return;
     }
-    result = await pool.query("insert into vote (election_candidate_id, username) values ($1, $2) returning id", [candidateId, username]);
+    result = await pool.query("insert into vote (election_candidate_id, username) values ($1, $2) returning (('x' || right(digest(vote.id::varchar, 'sha256')::text, 6))::bit(24)::int) as id", [candidateId, username]);
     res.status(200).send({
         voteId: result.rows[0].id,
     });
